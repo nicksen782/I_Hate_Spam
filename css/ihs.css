@@ -1,0 +1,213 @@
+* {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+::-moz-range-track {
+	background: #ccc;
+	border: 0;
+}
+
+input::-moz-focus-inner {
+	border: 0;
+}
+
+table#untrusted_topics caption {background-color: #ffcf47;font-weight: bold;}
+table#trusted_topics   caption {background-color: #75ce48;font-weight: bold;}
+table#deleted_topics   caption {background-color: #ff4747;font-weight: bold;}
+table#recentDeletions  caption {background-color: #ff4747;font-weight: bold;}
+table#deleted_topics  {width:880px;display: none;}
+table#untrusted_topics{ width:880px; }
+table#trusted_topics  { width:880px; }
+table#recentDeletions { width:880px; }
+
+/* https://divtable.com/table-styler/ */
+table.blueTable {
+  border: 1px solid #1C6EA4;
+  background-color: #EEEEEE;
+  /*width: 100%;*/
+  text-align: left;
+  border-collapse: collapse;
+  font-family: monospace;
+}
+table.blueTable td, table.blueTable th {
+  border: 3px double #AAAAAA;
+  /* padding: 3px 2px; */
+  /*padding: 5px;*/
+}
+table.blueTable tbody td {
+  font-size: 13px;
+}
+table.blueTable tr:nth-child(even) {
+  background: #D0E4F5;
+}
+table.blueTable thead {
+  background: #1C6EA4;
+  background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+  background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+  background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+  border-bottom: 2px solid #444444;
+}
+table.blueTable thead th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-align: center;
+  border-left: 2px solid #D0E4F5;
+}
+table.blueTable thead th:first-child {
+  border-left: none;
+}
+
+table.blueTable tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+  background: #D0E4F5;
+  background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  border-top: 2px solid #444444;
+}
+table.blueTable tfoot td {
+  font-size: 14px;
+}
+table.blueTable tfoot .links {
+  text-align: right;
+}
+table.blueTable tfoot .links a{
+  display: inline-block;
+  background: #1C6EA4;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+/* https://divtable.com/table-styler/ */
+
+/* PROGRESS BAR*/
+#entireBodyDiv {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 5000;
+	opacity: 0;
+	transition: opacity .15s ease-in-out;
+	display: none;
+}
+#progressbarDiv {
+	border: 2px solid rgb(83, 94, 135);
+	border: 2px solid rgba(255, 224, 0, 0.7);
+	border-radius: 5px;
+	background-image: url(../img/ProgressBar.gif);
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	display: none;
+	z-index: 5001;
+	position: fixed;
+	left: 50%;
+	/*bottom: 0px;*/
+	top: 10px;
+	/*top: 50%;*/
+	transform: translate(-50%, 0%);
+	/*transform: translate(-50%, 50%);*/
+	width: 90%;
+	/*width: 600px;*/
+	height: 10px;
+	/*height: 20px;*/
+}
+/* PROGRESS BAR*/
+
+textarea#knownspammers ,
+textarea#trustedusers ,
+textarea#spammywords
+{
+	width:200px;
+	height:5em;
+	display: block;
+}
+
+#scanButtonsDiv{
+  width: 850px;
+  background-color:skyblue;
+  text-align: center;
+  padding: 10px;
+  margin:auto;
+}
+#runScan_noDelete{
+  background-color:yellow;
+  width: 20em;
+  /* padding: 5px; */
+  /* padding-top:    40px; */
+  /* padding-bottom: 40px; */
+  height: 125px;
+  font-weight: bold;
+  font-size: 24px;
+  vertical-align:top;
+}
+
+
+#runScan_Delete  {
+  margin-left:50px;
+  background-color: #ff4747;
+  width: 10em;
+  /* padding: 5px; */
+  /* padding-top:    30px; */
+  /* padding-bottom: 30px; */
+  height: 125px;
+  font-weight: bold;
+  font-size: 24px;
+  vertical-align:top;
+}
+
+.option_buttons{
+  /* margin-left:5px; */
+  /* margin-right:5px; */
+  display: block;
+  width: 90%;
+  margin: 5px;
+}
+
+div#bodycontainer {
+    background-color: #3f8a87;
+    padding: 10px;
+    /* display: inline-block; */
+    /* width: 682px; */
+}
+
+body {
+    background-color: black;
+    padding: 10px;
+    width: 920px;
+    margin: auto;
+}
+
+#cmdline_output {
+    width: 250px;
+    display: block;
+}
+
+html {
+    background: url(../img/bg-light-100206.gif);
+}
+
+header_title {
+    font-size: 200%;
+}
+
+.header_desc {
+    /* font-size: 100%; */
+    display: block;
+    font-style: italic;
+}
+
+.header_title {
+    font-size: 300%;
+}
+
+#header {
+    text-align: center;
+}

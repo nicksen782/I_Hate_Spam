@@ -1,0 +1,8 @@
+<Files db_data_backup.sql>
+  Require all denied
+</Files>
+
+<Files db_data_backup.sql>
+  Order Allow,Deny
+  Deny from all
+</Files>

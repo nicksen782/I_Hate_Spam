@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Change into the directory of the application and run the tool (one line.)
+cd /home/user/IHateSpamV4/api && php -d register_argc_argv=1 ihs_p.php ajax_runScan 1 0

@@ -31,107 +31,155 @@
 			<span class="header_desc">Remove Uzebox phpBB spam posts.</span>
 		</div>
 
-		<br>
-		<div id="scanButtonsDiv">
-			<button id="runScan_noDelete">Run scan<br>(<u>NO DELETE</u>)</button>
-			<button id="runScan_Delete">Run scan<br>(<u>DELETE</u>)</button>
+		<div id="viewSwitcher">
+			<input readonly id="cmdline_output" value="">
+			<br>
+			<button onclick="viewChange('controls');">controls</button>
+			<button onclick="viewChange('info');">info</button>
+			<button onclick="viewChange('manage');">manage</button>
 		</div>
-		<br>
+
+		<hr>
 
 		<!--PROGRESS BAR AND MODALS-->
 		<div id="entireBodyDiv" onclick="shared.activateProgressBar(false);"></div>
 		<div id="progressbarDiv"></div>
 
-
-		<!-- <br> -->
-		<table class="blueTable" id="deleted_topics">
-			<caption>Deleted Posts (from the last scan.)</caption>
-			<thead>
-				<tr>
-					<th>Last Post Date</th>
-					<th>Last Author</th>
-					<th>IP</th>
-					<th>Deletion Reason</th>
-					<th>Forum Name</th>
-					<th>Topic</th>
-					<th>Original Author</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
-		<!-- <br> -->
-		<table class="blueTable" id="untrusted_topics">
-			<caption>Untrusted Posts (from the last scan.)</caption>
-			<thead>
-				<tr>
-					<th>INFO</th>
-					<th>ACTIONS</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
-		<br>
-		<table class="blueTable" id="trusted_topics">
-			<caption>Trusted Posts (from the last scan.)</caption>
-			<thead>
-				<tr>
-					<th>Topic</th>
-					<th>Original Author</th>
-					<th>Last Author</th>
-					<th>Post URL</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
-
 		<br>
 
-		<div id="otherinfo">
-			knownspammers
-			<textarea readonly id="knownspammers"></textarea>
-			<br>
+		<div id="sections">
 
-			cmdline_output
-			<input readonly id="cmdline_output" value="">
-			<br>
+			<div id="controls" class="sections show">
+				<div id="scanButtonsDiv">
+					<button id="runScan_noDelete">Run scan<br>(<u>NO DELETE</u>)</button>
+					<button id="runScan_Delete">Run scan<br>(<u>DELETE</u>)</button>
+				</div>
 
-			<table class="blueTable" id="deletionCounts">
-				<caption>Latest Deletion Counts</caption>
-				<thead>
-					<tr>
-						<th>Latest deleted post</th>
-						<th>Count</th>
-						<th>Username</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-			<br>
+				<br>
+
+				<table class="blueTable" id="deleted_topics">
+					<caption>Deleted Posts (from the last scan.)</caption>
+					<thead>
+						<tr>
+							<th>Last Post Date</th>
+							<th>Last Author</th>
+							<th>IP</th>
+							<th>Deletion Reason</th>
+							<th>Forum Name</th>
+							<th>Topic</th>
+							<th>Original Author</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+
+				<br>
+
+				<table class="blueTable" id="untrusted_topics">
+					<caption>Untrusted Posts (from the last scan.)</caption>
+					<thead>
+						<tr>
+							<th>INFO</th>
+							<th>ACTIONS</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+
+				<br>
+
+				<table class="blueTable" id="trusted_topics">
+					<caption>Trusted Posts (from the last scan.)</caption>
+					<thead>
+						<tr>
+							<th>Topic</th>
+							<th>Original Author</th>
+							<th>Last Author</th>
+							<th>Post URL</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+
+				<br>
+
+			</div>
+
+			<div id="info" class="sections">
+				<div id="otherinfo">
+					<table class="blueTable" id="deletionCounts">
+						<caption>Latest Deletion Counts</caption>
+						<thead>
+							<tr>
+								<th>Latest deleted post</th>
+								<th>Count</th>
+								<th>Username</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+					<br>
+
+				</div>
+
+				<table class="blueTable" id="recentDeletions">
+					<caption>recentDeletions</caption>
+					<thead>
+						<tr>
+							<th>Forum Name</th>
+							<th>Topic</th>
+							<th>Original Author</th>
+							<th>Last Author</th>
+							<th>IP</th>
+							<th>Deletion Reason</th>
+							<th>Deletion Date</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+
+			<div id="manage" class="sections">
+
+				SPAMMY WORDS
+				<button onclick="prompt_new_spammyWord();">ADD NEW SPAMMY WORD</button>
+				<br>
+
+				<div id="spammyWords_table_div">
+					<table id="spammyWords_table" class="blueTable">
+						<caption></caption>
+						<thead>
+							<tr>
+								<th>id</th>
+								<th>tstamp</th>
+								<th>word</th>
+								<th>category</th>
+								<th>ACTIONS</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+
+				<br>
+
+				KNOWN SPAMMERS
+				<br>
+				<textarea readonly id="knownspammers"></textarea>
+				<br>
+
+			</div>
+
 		</div>
 
-		<!-- <br> -->
-
-		<table class="blueTable" id="recentDeletions">
-			<caption>recentDeletions</caption>
-			<thead>
-				<tr>
-					<th>Forum Name</th>
-					<th>Topic</th>
-					<th>Original Author</th>
-					<th>Last Author</th>
-					<th>IP</th>
-					<th>Deletion Reason</th>
-					<th>Deletion Date</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
 		<br>
+
 
 		<div id="footer">
 			(2019) Nickolas Andersen (nicksen782)

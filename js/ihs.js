@@ -223,10 +223,153 @@ function runScan(deleteFlaggedPosts){
 		}
 	);
 }
-function displayData(type, data){
-	var deletionCounts    = document.querySelector("#deletionCounts");
+
+function prompt_new_spammyWord(){
+	let word = prompt("What is the word?");
+	let category = prompt("What is the category");
+
+	if     (!word)    { alert("ERROR: Invalid word!"); }
+	else if(!category){ alert("ERROR: Invalid category!"); }
+	else{
+		new_spammyWord(word, category);
+	}
+}
+function new_spammyWord(word, category){
+	var formData = {
+		"o"       : "ajax_new_spammyWord",
+		"word"    : word,
+		"category": category,
+		"_config" : {
+			"responseType" : "json",
+			"hasFiles"     : false ,
+			"filesHandle"  : null  , // document.querySelector('#emu_gameDb_builtInGames_choose');
+			"method"       : "POST", // POST or GET
+			"processor"    : "api/ihs_p.php"
+		}
+	};
+	var prom1 = shared.serverRequest(formData);
+	prom1.then(
+		function(res){
+			console.log("SUCCESS: RES:", res);
+			runScan(0);
+		}
+		,
+		function(res){
+			console.log("FAILURE: RES:", res);
+			alert("ERROR! See the dev console for details.");
+		}
+	);
+}
+function delete_spammyWord(id, word, category){
+	var formData = {
+		"o"       : "ajax_delete_spammyWord",
+		"id"      : id,
+		"_config" : {
+			"responseType" : "json",
+			"hasFiles"     : false ,
+			"filesHandle"  : null  , // document.querySelector('#emu_gameDb_builtInGames_choose');
+			"method"       : "POST", // POST or GET
+			"processor"    : "api/ihs_p.php"
+		}
+	};
+	var prom1 = shared.serverRequest(formData);
+	prom1.then(
+		function(res){
+			// console.log("SUCCESS: RES:", res);
+			runScan(0);
+		}
+		,
+		function(res){
+			console.log("FAILURE: RES:", res);
+			alert("ERROR! See the dev console for details.");
+		}
+	);
+}
+function update_spammyWord(id, elem){
+	word     = elem.closest('tr').querySelector(".input_word").value ;
+	category = elem.closest('tr').querySelector(".input_category").value ;
+
+	var formData = {
+		"o"       : "ajax_update_spammyWord",
+		"id"      : id,
+		"word"    : word,
+		"category": category,
+		"_config" : {
+			"responseType" : "json",
+			"hasFiles"     : false ,
+			"filesHandle"  : null  , // document.querySelector('#emu_gameDb_builtInGames_choose');
+			"method"       : "POST", // POST or GET
+			"processor"    : "api/ihs_p.php"
+		}
+	};
+	var prom1 = shared.serverRequest(formData);
+	prom1.then(
+		function(res){
+			// console.log("SUCCESS: RES:", res);
+			runScan(0);
+		}
+		,
+		function(res){
+			console.log("FAILURE: RES:", res);
+			alert("ERROR! See the dev console for details.");
+		}
+	);
+}
+
+function populateInfoTables(data){
+	// Populate the spammy words table.
+	//
+
+	console.log("populateInfoTables", data.spammyWords_table);
+
+	// Populate the known spammers table.
+	var spammyWords_table    = document.querySelector("#spammyWords_table");
+	for(let i = spammyWords_table.rows.length - 1; i > 0; i--){ spammyWords_table.deleteRow(i); }
+	var fragTable=document.createDocumentFragment();
+
+	for(let i=0; i<data.spammyWords_table.length; i+=1){
+		var thisrow = data.spammyWords_table[i];
+
+		var temp_tr   = document.createElement("tr");
+		temp_tr.setAttribute('json', JSON.stringify(thisrow,null,0));
+
+		var temp_td1  = document.createElement("td"); temp_tr.appendChild(temp_td1);
+		var temp_td2  = document.createElement("td"); temp_tr.appendChild(temp_td2);
+		var temp_td3  = document.createElement("td"); temp_tr.appendChild(temp_td3);
+		var temp_td4  = document.createElement("td"); temp_tr.appendChild(temp_td4);
+		var temp_td5  = document.createElement("td"); temp_tr.appendChild(temp_td5);
+
+		temp_td1.innerHTML = thisrow['id'];       ; // id
+		temp_td2.innerHTML = thisrow['tstamp'];   ; // tstamp
+		temp_td3.innerHTML = "<input class='input_word'     type='text' value='"+thisrow['word']+"'>";     ; // word
+		temp_td4.innerHTML = "<input class='input_category' type='text' value='"+thisrow['category']+"'>";     ; // category
+
+		let id       = "\""+thisrow['id']      +"\"" ;
+		let word     = "\""+thisrow['word']    +"\"" ;
+		let category = "\""+thisrow['category']+"\"" ;
+
+		 // BUTTONS
+		temp_td5.innerHTML = ""+
+			"<input type='button' onclick='delete_spammyWord("+id+", "+word+", "+category+");' value='delete'>" +
+			"<input type='button' onclick='update_spammyWord("+id+", this);' value='update'>" +
+			"";
+
+		fragTable.appendChild(temp_tr);
+	}
+
+	spammyWords_table.appendChild(fragTable);
+
+	// Populate the known spammers textarea.
 	var knownspammers    = document.querySelector("#knownspammers");
 	knownspammers.value  = data.knownSpamAccounts.reverse().join('\n');
+
+}
+
+function displayData(type, data){
+	var deletionCounts    = document.querySelector("#deletionCounts");
+
+	// Populate the info tables.
+	populateInfoTables(data);
 
 	var cmdline_output    = document.querySelector("#cmdline_output");
 	cmdline_output.value  = data.cmdline_output;
@@ -599,6 +742,33 @@ function ajax_sql_data_backups(){
 			alert("ERROR! See the dev console for details.");
 		}
 	);
+}
+
+// viewChange('controls');
+// viewChange('manage');
+
+function viewChange(view){
+	let controls = document.querySelector("#controls");
+	let manage   = document.querySelector("#manage");
+	let info     = document.querySelector("#info");
+	let sections = document.querySelectorAll(".sections");
+	let newView = undefined;
+
+	switch(view){
+		case "controls":{ newView = controls; break; }
+		case "manage"  :{ newView = manage  ; break; }
+		case "info"    :{ newView = info    ; break; }
+
+		default : { return; break; }
+	}
+
+	// Hide all views.
+	sections.forEach(function(d){
+		d.classList.remove("show");
+	});
+
+	// Show the selected view.
+	newView.classList.add("show");
 }
 
 window.onload = function(){

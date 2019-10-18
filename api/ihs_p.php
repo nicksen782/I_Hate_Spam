@@ -226,6 +226,10 @@ function API_REQUEST( $api ){
 
 	$o_values["ajax_sql_data_backups"]= [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
 
+	$o_values["ajax_new_spammyWord"]= [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
+	$o_values["ajax_delete_spammyWord"]= [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
+	$o_values["ajax_update_spammyWord"]= [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
+
 	$o_values["ajax_ipUserCounts"]    = [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
 	// --- POST CALLABLE FUNCTIONS ---
 
@@ -258,6 +262,100 @@ function API_REQUEST( $api ){
 	}
 
 }
+
+function ajax_delete_spammyWord(){
+	global $_db_file ;
+
+	// Create the file. By trying to open the file it will be created!
+	$dbhandle = new sqlite3_DB_PDO( $_db_file ) or exit("cannot open the database");
+
+	$s_SQL1='
+	DELETE FROM spammyWords
+	WHERE id=:id
+	; ';
+	$prp1     = $dbhandle->prepare($s_SQL1);
+	$dbhandle->bind(':id'       , $_POST['id']     ) ;
+	$retval1  = $dbhandle->execute();
+	// $results1 = $dbhandle->statement->fetchAll(PDO::FETCH_ASSOC) ;
+
+	$output = [
+		'data'    => [] ,
+		'success' => $retval1  ,
+	];
+
+	echo json_encode( $output );
+}
+function ajax_update_spammyWord(){
+	global $_db_file ;
+
+	// Create the file. By trying to open the file it will be created!
+	$dbhandle = new sqlite3_DB_PDO( $_db_file ) or exit("cannot open the database");
+
+	$s_SQL1='
+	UPDATE spammyWords
+		SET
+		tstamp   = CURRENT_TIMESTAMP,
+		word     = :word,
+		category = :category
+	WHERE id=:id
+	; ';
+	$prp1     = $dbhandle->prepare($s_SQL1);
+	$dbhandle->bind(':id'       , $_POST['id']     ) ;
+	$dbhandle->bind(':word'     , $_POST['word']     ) ;
+	$dbhandle->bind(':category' , $_POST['category'] ) ;
+	$retval1  = $dbhandle->execute();
+	// $results1 = $dbhandle->statement->fetchAll(PDO::FETCH_ASSOC) ;
+
+	$output = [
+		'data'    => [] ,
+		'success' => $retval1  ,
+	];
+
+	echo json_encode( $output );
+}
+
+function ajax_new_spammyWord(){
+	global $_db_file ;
+
+	// Create the file. By trying to open the file it will be created!
+	$dbhandle = new sqlite3_DB_PDO( $_db_file ) or exit("cannot open the database");
+
+	// Check if the username has already been added.
+	$s_SQL1='
+		SELECT word
+		FROM spammyWords
+		WHERE word = :word
+	;';
+	$prp1     = $dbhandle->prepare($s_SQL1);
+	$dbhandle->bind(':word'     , $_POST['word']     ) ;
+	$retval1  = $dbhandle->execute();
+	$results1 = $dbhandle->statement->fetchAll(PDO::FETCH_ASSOC) ;
+
+	// Add the name if it does not already exist.
+	if( !sizeof($results1) ){
+		$s_SQL1='
+			INSERT INTO spammyWords(tstamp, word, category)
+			VALUES(
+				CURRENT_TIMESTAMP,
+				:word,
+				:category
+			)
+		; ';
+		$prp1     = $dbhandle->prepare($s_SQL1);
+		$dbhandle->bind(':word'     , $_POST['word']     ) ;
+		$dbhandle->bind(':category' , $_POST['category'] ) ;
+		$retval1  = $dbhandle->execute();
+		$results1 = $dbhandle->statement->fetchAll(PDO::FETCH_ASSOC) ;
+	}
+
+	$output = [
+		'data'    => $results1 ,
+		'success' => $retval1  ,
+	];
+
+	echo json_encode( $output );
+}
+
 function ajax_runScan(){
 	global $cookieData        ;
 	global $isLoggedIn        ;
@@ -265,6 +363,7 @@ function ajax_runScan(){
 	global $knownSpamAccounts ;
 	global $trustedMembers    ;
 	global $spammyWords       ;
+	global $spammyWords_table ;
 
 	// Is the delete flag set?
 	$deleteFlaggedPosts = intval($_POST['deleteFlaggedPosts'])
@@ -332,6 +431,10 @@ function ajax_runScan(){
 		'knownSpamAccounts'    => $knownSpamAccounts ,
 		'trustedusers'         => $trustedMembers    ,
 		'spammyWords'          => $spammyWords       ,
+
+		'spammyWords_table'    => $spammyWords_table ,
+
+
 		'isLoggedIn'           => $isLoggedIn        ,
 		'loggedOnUsername'     => $loggedOnUsername  ,
 		'cmdline_output'       => file_get_contents('cmdline_output.txt') ,
@@ -718,6 +821,7 @@ function getFilterLists(){
 	global $trustedMembers           ;
 	global $knownSpamAccounts        ;
 	global $spammyWords              ;
+	global $spammyWords_table              ;
 	// global $spammyIPs_individualBans ;
 	// global $spammyIPs_subnetsCIDR    ;
 
@@ -741,6 +845,11 @@ function getFilterLists(){
 	$retval3  = $dbhandle->execute();
 	$results3 = $dbhandle->statement->fetchAll(PDO::FETCH_ASSOC) ;
 
+	$s_SQL4=' SELECT * FROM spammyWords WHERE 1=1 ORDER BY word; ';
+	$prp4     = $dbhandle->prepare($s_SQL4);
+	$retval4  = $dbhandle->execute();
+	$results4 = $dbhandle->statement->fetchAll(PDO::FETCH_ASSOC) ;
+
 	// $s_SQL4=' SELECT username FROM trustedAccounts WHERE 1=1 ; ';
 	// $prp4     = $dbhandle->prepare($s_SQL4);
 	// $retval4  = $dbhandle->execute();
@@ -754,6 +863,8 @@ function getFilterLists(){
 	$trustedMembers            = array_map(function($v){ return $v['username']; }, $results1);
 	$knownSpamAccounts         = array_map(function($v){ return $v['username']; }, $results2);
 	$spammyWords               = array_map(function($v){ return $v['word'];     }, $results3);
+	$spammyWords_table         = $results4;
+
 	// $spammyIPs_individualBans;
 	// $spammyIPs_subnetsCIDR;
 

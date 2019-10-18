@@ -211,3 +211,15 @@ header_title {
 #header {
     text-align: center;
 }
+
+.sections{ display:none; }
+.sections.show{ display:block; }
+
+div#spammyWords_table_div {
+    height: 200px;
+    overflow: auto;
+}
+
+table#spammyWords_table {
+    width: 100%;
+}

@@ -54,4 +54,5 @@ $spammyWords = [
 ];
 $spammyWords = array_map('strtolower', $spammyWords);
 
+$spammyWords_table = [] ;
 ?>

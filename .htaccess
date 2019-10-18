@@ -1,0 +1,8 @@
+<Files forumCredentials.json>
+  Require all denied
+</Files>
+
+<Files forumCredentials.json>
+  Order Allow,Deny
+  Deny from all
+</Files>

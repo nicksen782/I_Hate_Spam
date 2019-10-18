@@ -46,11 +46,14 @@ Example of how to run the scanner from the command prompt:
 cd /home/user/IHateSpamV4/api && php -d register_argc_argv=1 ihs_p.php ajax_runScan 1 0
 ```
 
-The application tries to protect the api/db_data_backup.sql file. It uses .htaccess to do this.
-If .htaccess files are not allowed (default) you will need to add the following example code to either your apache.conf or your virtual hosts file in /etc/apache2/sites-enabled. ... Or do not use the backup feature and the file will not be created.
+The application tries to protect the api/db_data_backup.sql and forumCredentials.json files. It uses .htaccess to do this.
+If .htaccess files are not allowed (default) you will need to add the following example code to either your apache.conf or your virtual hosts file in /etc/apache2/sites-enabled. This is important because you do not want anything other than the scanner itself to see those files.
 ```sh
-<Directory /var/www/PATH_TO_APPLICATION/IHateSpamV4/api/>
-AllowOverride All
+<Directory /var/www/PATH_TO_APPLICATION/IHateSpamV4/>
+  AllowOverride All
+</Directory>
+<Directory /var/www/PATH_TO_APPLICATION/IHateSpamV4/api>
+  AllowOverride All
 </Directory>
 ```
 

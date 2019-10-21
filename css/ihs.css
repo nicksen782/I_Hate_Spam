@@ -218,8 +218,10 @@ header_title {
 div#spammyWords_table_div {
     height: 200px;
     overflow: auto;
+    display: inline-block;
+    width: 450px;
 }
 
 table#spammyWords_table {
-    width: 100%;
+    /*! width: 100%; */
 }

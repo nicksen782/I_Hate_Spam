@@ -333,14 +333,14 @@ function populateInfoTables(data){
 		var temp_tr   = document.createElement("tr");
 		temp_tr.setAttribute('json', JSON.stringify(thisrow,null,0));
 
-		var temp_td1  = document.createElement("td"); temp_tr.appendChild(temp_td1);
-		var temp_td2  = document.createElement("td"); temp_tr.appendChild(temp_td2);
+		// var temp_td1  = document.createElement("td"); temp_tr.appendChild(temp_td1);
+		// var temp_td2  = document.createElement("td"); temp_tr.appendChild(temp_td2);
 		var temp_td3  = document.createElement("td"); temp_tr.appendChild(temp_td3);
 		var temp_td4  = document.createElement("td"); temp_tr.appendChild(temp_td4);
 		var temp_td5  = document.createElement("td"); temp_tr.appendChild(temp_td5);
 
-		temp_td1.innerHTML = thisrow['id'];       ; // id
-		temp_td2.innerHTML = thisrow['tstamp'];   ; // tstamp
+		// temp_td1.innerHTML = thisrow['id'];       ; // id
+		// temp_td2.innerHTML = thisrow['tstamp'];   ; // tstamp
 		temp_td3.innerHTML = "<input class='input_word'     type='text' value='"+thisrow['word']+"'>";     ; // word
 		temp_td4.innerHTML = "<input class='input_category' type='text' value='"+thisrow['category']+"'>";     ; // category
 

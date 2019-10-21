@@ -894,6 +894,7 @@ function createTopicsArrays($dom){
 
 		// Get the data fields for this record.
 		$thisRow_arr = [
+			'unread'         => $thisRow_elem->querySelector('a.unread') ,
 			'topictitle'     => $thisRow_elem->querySelector('a.topictitle')->innerHTML ,
 			'topictitleurl'  => $thisRow_elem->querySelector('a.topictitle')->getAttributes()['href'] ,
 
@@ -950,6 +951,7 @@ function createTopicsArrays($dom){
 		// Create an entry in the untrustedTopics array.
 		$tempRecord =
 			array(
+				'unread'      => $thisRow_arr['unread'] ? true : false     , // unread      ,
 				'forumname'      => $thisRow_arr['forumname']      , // $forumnameTXT      ,
 				'topic'          => $thisRow_arr['topictitle']     , // $topictitle        ,
 				'author'         => $thisRow_arr['orgpostername']  , // $originalPosterTXT ,

@@ -320,7 +320,7 @@ function populateInfoTables(data){
 	// Populate the spammy words table.
 	//
 
-	console.log("populateInfoTables", data.spammyWords_table);
+	// console.log("populateInfoTables", data.spammyWords_table);
 
 	// Populate the known spammers table.
 	var spammyWords_table    = document.querySelector("#spammyWords_table");
@@ -444,17 +444,20 @@ function displayData(type, data){
 			var temp_tr   = document.createElement("tr");
 			temp_tr.setAttribute('json', JSON.stringify(thisrow,null,0));
 
+			let link = 'http://uzebox.org/forums/'+thisrow.lastPostURL ;
+
 			// topicoptions
 			var temp_td1  = document.createElement("td"); temp_tr.appendChild(temp_td1);
+
 			// org_auth
 			var temp_td2  = document.createElement("td"); temp_tr.appendChild(temp_td2);
 			// last_auth
 			var temp_td3  = document.createElement("td"); temp_tr.appendChild(temp_td3);
 			// link
-			var temp_td4  = document.createElement("td"); temp_tr.appendChild(temp_td4);
+			// var temp_td4  = document.createElement("td"); temp_tr.appendChild(temp_td4);
 
 			/* topic        */
-			temp_td1.innerHTML=''+thisrow.topic;
+			temp_td1.innerHTML='<a href="'+link+'" target="_blank">'+thisrow.topic+'</a>';''
 
 			/* org_auth     */
 			temp_td2.innerHTML='<a href="http://uzebox.org/forums/'+thisrow.authorURL+'" target="_blank">'+thisrow.author+'</a>';
@@ -463,7 +466,12 @@ function displayData(type, data){
 			temp_td3.innerHTML='<a href="http://uzebox.org/forums/'+thisrow.lastPosterURL+'" target="_blank">'+thisrow.lastPostAuthor+'</a>';
 
 			/* link         */
-			temp_td4.innerHTML='<a href="http://uzebox.org/forums/'+thisrow.lastPostURL+'" target="_blank">link</a>' ;
+			// temp_td4.innerHTML= '<a href="'+link+'" target="_blank">link</a>';
+
+			// Is this unread?
+			if(thisrow.unread){
+				temp_td1.innerHTML += " <span style='font-weight:bold;font-size: 125%;color:red;'>[UNREAD]</span> " ;
+			}
 
 			fragTable.appendChild(temp_tr);
 		}

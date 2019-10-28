@@ -219,7 +219,8 @@ div#spammyWords_table_div {
     height: 200px;
     overflow: auto;
     display: inline-block;
-    width: 450px;
+    /* width: 500px; */
+    /* padding-right: 10px; */
 }
 
 table#spammyWords_table {

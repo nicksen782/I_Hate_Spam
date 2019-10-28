@@ -338,6 +338,7 @@ function populateInfoTables(data){
 		var temp_td3  = document.createElement("td"); temp_tr.appendChild(temp_td3);
 		var temp_td4  = document.createElement("td"); temp_tr.appendChild(temp_td4);
 		var temp_td5  = document.createElement("td"); temp_tr.appendChild(temp_td5);
+		var temp_td6  = document.createElement("td"); temp_tr.appendChild(temp_td6);
 
 		// temp_td1.innerHTML = thisrow['id'];       ; // id
 		// temp_td2.innerHTML = thisrow['tstamp'];   ; // tstamp
@@ -348,9 +349,12 @@ function populateInfoTables(data){
 		let word     = "\""+thisrow['word']    +"\"" ;
 		let category = "\""+thisrow['category']+"\"" ;
 
+		temp_td5.innerHTML = thisrow['FREQ'];
+
 		 // BUTTONS
-		temp_td5.innerHTML = ""+
+		temp_td6.innerHTML = ""+
 			"<input type='button' onclick='delete_spammyWord("+id+", "+word+", "+category+");' value='delete'>" +
+			" " +
 			"<input type='button' onclick='update_spammyWord("+id+", this);' value='update'>" +
 			"";
 

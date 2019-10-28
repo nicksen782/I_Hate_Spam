@@ -1,32 +1,31 @@
-CREATE TABLE 'deletions'
-(
--- Primary key.
-'id'                          INTEGER PRIMARY KEY AUTOINCREMENT ,
+CREATE TABLE 'deletions' (
+	-- Primary key.
+	'id'                          INTEGER PRIMARY KEY AUTOINCREMENT ,
 
--- Base topic info.
-'topic_title'                 VARCHAR  ,
+	-- Base topic info.
+	'topic_title'                 VARCHAR  ,
 
--- Original author.
-'topicOriginalAuthorUsername' VARCHAR  ,
+	-- Original author.
+	'topicOriginalAuthorUsername' VARCHAR  ,
 
--- Latest author and post info.
-'topicLastAuthorUsername'     VARCHAR  ,
-'topicLastpostNumber'         VARCHAR  ,
-'topicLastPostDate'           DATETIME ,
+	-- Latest author and post info.
+	'topicLastAuthorUsername'     VARCHAR  ,
+	'topicLastpostNumber'         VARCHAR  ,
+	'topicLastPostDate'           DATETIME ,
 
--- Forum used.
-'forumName'                   VARCHAR   ,
+	-- Forum used.
+	'forumName'                   VARCHAR   ,
 
--- Technical.
-'forumNumber'                 VARCHAR    ,
-'topicNumber'                 VARCHAR    ,
-'postIpAddress'               VARCHAR    ,
+	-- Technical.
+	'forumNumber'                 VARCHAR    ,
+	'topicNumber'                 VARCHAR    ,
+	'postIpAddress'               VARCHAR    ,
 
--- Deletion logging.
-'reasonForDeletion'           VARCHAR    ,
-'deletedByUsername'           VARCHAR    ,
-'deletionDate'                DATETIME   ,
-'moderatorIP'                 VARCHAR
+	-- Deletion logging.
+	'reasonForDeletion'           VARCHAR    ,
+	'deletedByUsername'           VARCHAR    ,
+	'deletionDate'                DATETIME   ,
+	'moderatorIP'                 VARCHAR
 )
 ;
 

@@ -218,6 +218,9 @@ function API_REQUEST( $api ){
 
 	$o_values=array();
 
+	// global $spammyWords_table;
+	// if(!sizeof($spammyWords_table)){ getFilterLists(); }
+
 	// --- POST CALLABLE FUNCTIONS ---
 	$o_values["ajax_runScan"]         = [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
 	$o_values["ajax_deletePost"]      = [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
@@ -231,6 +234,10 @@ function API_REQUEST( $api ){
 	$o_values["ajax_update_spammyWord"]= [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
 
 	$o_values["ajax_ipUserCounts"]    = [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
+
+	// $o_values["OLDgetDeletionMatchFrequencies"]    = [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
+	// $o_values["getDeletionMatchFrequencies"]       = [ "p"=>( ($public) ? 1 : 0 ), "args"=>[] ] ;
+
 	// --- POST CALLABLE FUNCTIONS ---
 
 	// DETERMINE IF THE API IS AVAILABLE TO THE USER.
@@ -388,7 +395,7 @@ function ajax_runScan(){
 	if($res['postsDeletedCount'] && $deleteFlaggedPosts ){
 		$postsDeletedCount=0;
 
-		while($res['postsDeletedCount'] && $runCount < 10){
+		while($res['postsDeletedCount'] && $runCount < 15){
 			$res = runScan($deleteFlaggedPosts);
 			$runCount += 1;
 			$postsDeletedCount += $res['postsDeletedCount'] ;
@@ -404,20 +411,20 @@ function ajax_runScan(){
 		$LatestDeletionCounts = getLatestDeletionsInfo();
 	}
 
-	$namespaces=array();
-	foreach(get_declared_classes() as $name) {
-		if(preg_match_all("@[^\\\]+(?=\\\)@iU", $name, $matches)) {
-			$matches = $matches[0];
-			$parent =&$namespaces;
-			while(count($matches)) {
-				$match = array_shift($matches);
-				if(!isset($parent[$match]) && count($matches))
-					$parent[$match] = array();
-				$parent =&$parent[$match];
+	// $namespaces=array();
+	// foreach(get_declared_classes() as $name) {
+	// 	if(preg_match_all("@[^\\\]+(?=\\\)@iU", $name, $matches)) {
+	// 		$matches = $matches[0];
+	// 		$parent =&$namespaces;
+	// 		while(count($matches)) {
+	// 			$match = array_shift($matches);
+	// 			if(!isset($parent[$match]) && count($matches))
+	// 				$parent[$match] = array();
+	// 			$parent =&$parent[$match];
 
-			}
-		}
-	}
+	// 		}
+	// 	}
+	// }
 
 	// print_r($namespaces);
 
@@ -426,14 +433,13 @@ function ajax_runScan(){
 		'res'                  => $res               ,
 			'postsDeletedCount'    => $postsDeletedCount ,
 			'runCount'             => $runCount          ,
-			'namespaces'           => $namespaces        ,
+			// 'namespaces'           => $namespaces        ,
 
 		'knownSpamAccounts'    => $knownSpamAccounts ,
 		'trustedusers'         => $trustedMembers    ,
 		'spammyWords'          => $spammyWords       ,
 
 		'spammyWords_table'    => $spammyWords_table ,
-
 
 		'isLoggedIn'           => $isLoggedIn        ,
 		'loggedOnUsername'     => $loggedOnUsername  ,
@@ -443,8 +449,8 @@ function ajax_runScan(){
 		'DEBUG_timing'             => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"] ,
 		'DEBUG_deleteFlaggedPosts' => $deleteFlaggedPosts ,
 		'DEBUG_cookieData'         => $cookieData         ,
-		'DEBUG_$_POST'             => $_POST              ,
-		'DEBUG_o'                  => $_POST['o']         ,
+		// 'DEBUG_$_POST'             => $_POST              ,
+		// 'DEBUG_o'                  => $_POST['o']         ,
 	];
 
 	// DEBUG
@@ -865,9 +871,71 @@ function getFilterLists(){
 	$spammyWords               = array_map(function($v){ return $v['word'];     }, $results3);
 	$spammyWords_table         = $results4;
 
+	// Add 'FREQ' to $spammyWords_table.
+	getDeletionMatchFrequencies();
+
 	// $spammyIPs_individualBans;
 	// $spammyIPs_subnetsCIDR;
 
+}
+
+function getDeletionMatchFrequencies(){
+	// echo "NEW ";
+	global $spammyWords_table;
+	if(!sizeof($spammyWords_table)){ getFilterLists(); }
+
+	//place this before any script you want to calculate time
+	// $time_start = microtime(true);
+
+	global $_db_file ;
+
+	// Create the file. By trying to open the file it will be created!
+	$dbhandle = new sqlite3_DB_PDO( $_db_file ) or exit("cannot open the database");
+
+	// SPAMMY WORD FREQUENCIES WITHIN TOPIC TITLES:
+	$wordCounts=[];
+	$total=0;
+	$combined_SQL = "SELECT ";
+	$combined_SQL .= "\n";
+
+	for($i=0; $i<sizeof($spammyWords_table); $i+=1){
+		if($i!=0){ $combined_SQL.=",\n"; }
+		$word = $spammyWords_table[$i]['word'];
+		$s_SQL1=' ( SELECT count() AS FREQ FROM deletions WHERE topic_title LIKE \'%'.$word.'%\' ) AS \''.$word.'\' ';
+		$combined_SQL .= $s_SQL1;
+		$spammyWords_table[$i]['FREQ'] = 0;
+	}
+
+	// echo $combined_SQL;
+	$prp1     = $dbhandle->prepare($combined_SQL);
+	$retval1  = $dbhandle->execute();
+	$results1 = $dbhandle->statement->fetchAll(PDO::FETCH_ASSOC)[0] ;
+
+	for($i=0; $i<sizeof($spammyWords_table); $i+=1){
+		$word = $spammyWords_table[$i]['word'];
+		$spammyWords_table[$i]['FREQ']=$results1[$word];
+	}
+
+	// Display Script End time
+	// $time_end = microtime(true);
+
+	//dividing with 60 will give the execution time in minutes other wise seconds
+	// $execution_time = ($time_end - $time_start)/60;
+
+	//execution time of the script
+	// echo '<b>Total Execution Time:</b> '.$execution_time.' Mins';
+
+	usort($spammyWords_table, function ($a, $b) {
+		if ($a['FREQ'] == $b['FREQ']) { return 0; }
+		return ($a['FREQ'] > $b['FREQ']) ? -1 : 1;
+	});
+
+	// echo $combined_SQL;
+	// echo "<pre>";
+	// // print_r($spammyWords_table);
+	// print_r($spammyWords_table);
+	// echo "</pre>";
+	// exit();
 }
 function createTopicsArrays($dom){
 	// global $trustedMembers;
@@ -875,6 +943,25 @@ function createTopicsArrays($dom){
 	global $knownSpamAccounts;
 	$untrustedTopics=[];
 	$trustedTopics  =[];
+
+	//
+	// 	if(!$days){ $days = 30; }
+	//
+	// 	$activeTopicsURL  = "http://uzebox.org/forums/search.php?st=$days&sk=t&sd=d&sr=topics&search_id=active_topics"; // Active topics url.
+	// 	$cookie_file_path = dirname(__FILE__).'/cookie.txt';
+	//
+	// 	$ch = curl_init();
+	// 	$options = array(
+	// 		CURLOPT_URL            => $activeTopicsURL ,
+	// 		CURLOPT_HEADER         => false            ,
+	// 		CURLOPT_RETURNTRANSFER => true             ,
+	// 	);
+	// 	curl_setopt_array($ch, $options);
+	// 	$result = curl_exec($ch);
+	// 	curl_close($ch);
+	// 	$ch=null;
+	// 	return $result;
+	//
 
 	// Get the first topics.
 	$topicTitlesROWS = $dom->querySelectorAll('.topics')->item(0);
@@ -885,7 +972,7 @@ function createTopicsArrays($dom){
 	// Get the rows of the topic.
 	$topicTitlesROWS=$topicTitlesROWS->querySelectorAll('li.row');
 
-// document.querySelectorAll(".topics")[0].querySelectorAll('li.row').forEach(function(d,i,a){ console.log(d.querySelector('a.topictitle').innerHTML, d.querySelectorAll('.username')); });
+	// document.querySelectorAll(".topics")[0].querySelectorAll('li.row').forEach(function(d,i,a){ console.log(d.querySelector('a.topictitle').innerHTML, d.querySelectorAll('.username')); });
 
 	// Go through the rows.
 	foreach($topicTitlesROWS as $key => $val){
@@ -998,24 +1085,7 @@ function createTopicsArrays($dom){
 		'trustedTopics'   => $trustedTopics   ,
 	);
 
-/*
-	if(!$days){ $days = 30; }
 
-	$activeTopicsURL  = "http://uzebox.org/forums/search.php?st=$days&sk=t&sd=d&sr=topics&search_id=active_topics"; // Active topics url.
-	$cookie_file_path = dirname(__FILE__).'/cookie.txt';
-
-	$ch = curl_init();
-	$options = array(
-		CURLOPT_URL            => $activeTopicsURL ,
-		CURLOPT_HEADER         => false            ,
-		CURLOPT_RETURNTRANSFER => true             ,
-	);
-	curl_setopt_array($ch, $options);
-	$result = curl_exec($ch);
-	curl_close($ch);
-	$ch=null;
-	return $result;
-*/
 }
 function runScan($deleteFlaggedPosts){
 	// Bring in the globals.
